@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">    
+
+<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script src="http://code.jquery.com/ui/1.8.21/jquery-ui.min.js"></script>
+<script src="jquery.ui.touch-punch.min.js"></script>
+    <link rel="stylesheet" href="/codemirror.css">
+    <script src="/codemirror.js"></script>
+    <script src="/clike.js"></script>
+
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var sock = io.connect()
+            
+            sock.on('stdout', function(stdout) {
+                console.log('stdout: ', stdout)
+                $('#stdout').text(stdout.text)
+                $('#last_update').text("last updated at: " + (new Date(stdout.timestamp)))
+            })
+                        
+            var editor = CodeMirror.fromTextArea(document.getElementById("c_program"), {
+                lineNumbers: true,
+                matchBrackets: true,
+                mode: "text/x-csrc",
+                onChange: function(self, change) {
+                    sock.emit('modify', self.getValue())
+                }
+            })
+
+            sock.emit('modify', editor.getValue())
+
+        })
+    </script>
+    <style type="text/css">    
+        #c_program {
+            width: 20%;
+            position: absolute;
+            height: 100%;
+            left: 0;
+        }
+        .imgcontainer {
+            position:absolute;
+            width: 80%;
+            right:0;
+            height: 100%;
+            overflow: scroll;
+            text-align:center;
+        }
+    
+        #last_update {
+        position: fixed;
+        font-size: 12px;
+        bottom: 20px;
+        right: 20px;
+            }
+    </style>
+</head>
+<body>
+
+<div class='imgcontainer'>
+    <pre id='stdout'></pre>
+</div>
+<textarea id='c_program'>
+#include <stdio.h>
+
+int main(void) {
+  printf("asdf\n")
+  return 0;
+}
+</textarea>
+
+<div id='last_update'></div>
+</body>
+</html>

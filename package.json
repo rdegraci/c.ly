@@ -1,0 +1,49 @@
+{
+   "name": "c.ly",
+   "version": "0.0.1",
+   "description": "socket.io real-time C compiler",
+   "keywords": [
+       "socket.io", "basic", "express", "c", "compiler"
+   ],
+   "maintainers": [
+       {
+           "name": "Daniel Lewis",
+           "email": "tetsuharu@gmail.com",
+           "web": "http://www.familab.org/" 
+       } 
+   ],
+   "contributors": [
+       {
+           "name": "Daniel Lewis",
+           "email": "daniel@levelsetlabs.com",
+           "web": "http://www.familab.org/" 
+       } 
+   ],
+   "bugs": {
+       "email": "daniel@levelsetlabs.com",
+       "web": "http://www.familab.org" 
+   },
+   "licenses": [
+       {
+           "type": "GPLv2",
+           "url": ""
+       } 
+   ],
+   "repositories": [
+       {
+           "type": "git",
+           "url": "git@github.com:tetsuharu/c.ly.git" 
+       } 
+   ],
+   "dependencies": {
+       "socket.io": "0.8.5",
+       "express": "2.4.7"
+   },
+   "os": ["linux"],
+   "cpu": ["x86", "x86_64"],
+   "engines": ["v8", "node"],
+   "scripts": {
+   },
+   "directories": {
+   } 
+}
