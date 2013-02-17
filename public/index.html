@@ -8,29 +8,77 @@
 <script src="jquery.ui.touch-punch.min.js"></script>
     <link rel="stylesheet" href="/codemirror.css">
     <script src="/codemirror.js"></script>
-    <script src="/clike.js"></script>
+    <script src="/mode/meta.js"></script>
+<script src='/mode/xml/xml.js'></script> <script src='/mode/haxe/haxe.js'></script> <script src='/mode/clojure/clojure.js'></script> <script src='/mode/commonlisp/commonlisp.js'></script> <script src='/mode/ruby/ruby.js'></script> <script src='/mode/javascript/javascript.js'></script> <script src='/mode/rst/rst.js'></script> <script src='/mode/apl/apl.js'></script> <script src='/mode/tiddlywiki/tiddlywiki.js'></script> <script src='/mode/ntriples/ntriples.js'></script> <script src='/mode/haskell/haskell.js'></script> <script src='/mode/erlang/erlang.js'></script> <script src='/mode/smalltalk/smalltalk.js'></script> <script src='/mode/pascal/pascal.js'></script> <script src='/mode/pig/pig.js'></script> <script src='/mode/php/php.js'></script> <script src='/mode/diff/diff.js'></script> <script src='/mode/jinja2/jinja2.js'></script> <script src='/mode/markdown/markdown.js'></script> <script src='/mode/python/python.js'></script> <script src='/mode/properties/properties.js'></script> <script src='/mode/verilog/verilog.js'></script> <script src='/mode/lua/lua.js'></script> <script src='/mode/sql/sql.js'></script> <script src='/mode/http/http.js'></script> <script src='/mode/ecl/ecl.js'></script> <script src='/mode/z80/z80.js'></script> <script src='/mode/less/less.js'></script> <script src='/mode/shell/shell.js'></script> <script src='/mode/vbscript/vbscript.js'></script> <script src='/mode/coffeescript/coffeescript.js'></script> <script src='/mode/perl/perl.js'></script> <script src='/mode/groovy/groovy.js'></script> <script src='/mode/gfm/gfm.js'></script> <script src='/mode/yaml/yaml.js'></script> <script src='/mode/htmlmixed/htmlmixed.js'></script> <script src='/mode/css/css.js'></script> <script src='/mode/r/r.js'></script> <script src='/mode/stex/stex.js'></script> <script src='/mode/velocity/velocity.js'></script> <script src='/mode/asterisk/asterisk.js'></script> <script src='/mode/clike/clike.js'></script> <script src='/mode/sieve/sieve.js'></script> <script src='/mode/plsql/plsql.js'></script> <script src='/mode/d/d.js'></script> <script src='/mode/vb/vb.js'></script> <script src='/mode/scheme/scheme.js'></script> <script src='/mode/sass/sass.js'></script> <script src='/mode/go/go.js'></script> <script src='/mode/tiki/tiki.js'></script> <script src='/mode/smarty/smarty.js'></script> <script src='/mode/rust/rust.js'></script> <script src='/mode/xquery/xquery.js'></script> <script src='/mode/sparql/sparql.js'></script> <script src='/mode/ocaml/ocaml.js'></script> <script src='/mode/mysql/mysql.js'></script> <script src='/mode/htmlembedded/htmlembedded.js'></script> <script src='/mode/rpm/spec/spec.js'></script> <script src='/mode/rpm/changes/changes.js'></script>
 
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
+
+
             var sock = io.connect()
+            var network_update = false
+            var last_build_status = true
             
             sock.on('stdout', function(stdout) {
-                console.log('stdout: ', stdout)
-                $('#stdout').text(stdout.text)
-                $('#last_update').text("last updated at: " + (new Date(stdout.timestamp)))
+                if (stdout.text != "") { // if this is not a failing build
+                    $('#stdout').text(stdout.text)
+                    $('#last_update').text("last updated at: " + (new Date(stdout.timestamp)))
+                    $('#errors').text('')
+                    if(last_build_status == false) {
+                        $('#background').animate({ 'background-color': '#eeffee' }, 200)
+                    }
+                    last_build_status = true
+                } else { // if this IS a failing build
+                    if (last_build_status == true) {
+                        $('#background').animate({ 'background-color': '#ffeeff'});
+                    }
+                    $('#errors').text(stdout.error)
+                    last_build_status = false
+                }
             })
                         
-            var editor = CodeMirror.fromTextArea(document.getElementById("c_program"), {
+            var editor = window.r=CodeMirror.fromTextArea(document.getElementById("c_program"), {
                 lineNumbers: true,
                 matchBrackets: true,
                 mode: "text/x-csrc",
                 onChange: function(self, change) {
-                    sock.emit('modify', self.getValue())
+                    if (!network_update) {
+                        sock.emit('modify', self.getValue())
+                    } else {
+                        network_update = false
+                    }
                 }
             })
 
-            sock.emit('modify', editor.getValue())
+            sock.on('modify', function(val) { 
+                network_update=true
+                editor.setValue(val)
+            })
+
+            sock.on('syntax', function(val) {
+                editor.setOption("mode", val)
+                $('#syntax').val(val)
+            })
+
+            var modes = $.unique($(CodeMirror.modeInfo).map(function(){return this.mode}).sort())
+            $(modes).each(function() {
+                if (this == 'gfm') { return }
+                $('#syntax').append('<option value="'+this+'">'+this+'</option>')
+            })
+            $('#syntax').change(function() {
+                editor.setOption("mode", $(this).val())
+                sock.emit('syntax', $(this).val())
+            }).val('clike')
+
+            sock.on('lock', function() {
+                editor.setOption('readOnly', true)
+                $('#lock').addClass('lock').removeClass('unlock')
+            })
+            sock.on('unlock', function() {
+                editor.setOption('readOnly', false)
+                $('#lock').addClass('unlock').removeClass('lock')
+            })
 
         })
     </script>
@@ -43,35 +91,101 @@
         }
         .imgcontainer {
             position:absolute;
-            width: 80%;
+            width: 50%;
             right:0;
             height: 100%;
             overflow: scroll;
-            text-align:center;
+            font-family: monospace, Courier;
         }
     
-        #last_update {
-        position: fixed;
-        font-size: 12px;
-        bottom: 20px;
-        right: 20px;
-            }
+        #etc {
+            position: fixed;
+            font-size: 12px;
+            bottom: 10px;
+            right: 20px;
+        }
+
+        #errors {
+            position: fixed;
+            font-size: 12px;
+            bottom: 10px;
+            left: 20px;
+            height: 200px;
+            width: 80%;
+            overflow: auto;
+        }
+
+        #background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        #CodeMirror {
+            opacity: 0.7;
+        }
+
+.lock {
+margin-top: 0.8em;
+border-radius: 0.3em;
+box-shadow: inset 0.9em 0.8em 0 0 #2C2C2C,inset -0.9em 0.8em 0 0 #2C2C2C,inset 0em -0.4em 0 0 #2C2C2C;
+font-size: 8px;
+width: 2em;
+height: 1.8em;
+position: relative;
+}
+.lock::before {
+left: 0.32em;
+border-radius: 1em 1em 0 0;
+top: -0.8em;
+position: absolute;
+width: 0.8em;
+content: "";
+height: 1.8em;
+border: 0.3em solid #2C2C2C;
+border-bottom: none;
+}
+.unlock {
+margin-top: 0.8em;
+border-radius: 0.3em;
+box-shadow: inset 0.9em 0.8em 0 0 #2C2C2C,inset -0.9em 0.8em 0 0 #2C2C2C,inset 0em -0.4em 0 0 #2C2C2C;
+font-size: 8px;
+width: 2em;
+height: 1.8em;
+position: relative;
+}
+.unlock::before {
+left: 1.4em;
+border-radius: 1em 1em 0 0;
+top: -0.8em;
+position: absolute;
+width: 0.8em;
+content: "";
+height: 0.8em;
+border: 0.3em solid #2C2C2C;
+border-bottom: none;
+}
+
+        #locked {
+            
+        }
     </style>
 </head>
 <body>
 
-<div class='imgcontainer'>
+  <div id='background'></div>
+  
+  <div class='imgcontainer'>
     <pre id='stdout'></pre>
-</div>
-<textarea id='c_program'>
-#include <stdio.h>
+  </div>
+  <textarea id='c_program'>
+  </textarea>
+  
+  <pre id="errors"></pre>
 
-int main(void) {
-  printf("asdf\n")
-  return 0;
-}
-</textarea>
-
-<div id='last_update'></div>
+  <div id="etc">
+    <div id="lock">&nbsp;</div>
+    <select id="syntax"></select>
+  </div>
 </body>
 </html>

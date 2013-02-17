@@ -1,0 +1,8 @@
+
+-- blah blah
+
+fac n | n < 0   = error "input is negative"
+      | n == 0  = 1
+
+
+main = fac 5

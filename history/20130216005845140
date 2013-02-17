@@ -1,0 +1,9 @@
+#include <stdio.h>
+
+int main(void) {
+  int i;
+  for(i=0; i<20; i++) {
+    printf("asdfasdfasdfasdfa %d sdfadfsasdfeqwr %d\n",i, &i);
+  }
+  return 0;
+}

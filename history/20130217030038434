@@ -1,0 +1,10 @@
+-module(asdf).
+-export([start/0, gogo/0]).
+
+start() ->
+  io:fwrite("Hellojgrfdsld\n"),
+  gogo().
+
+
+gogo() ->
+  io:fwrite("gogo gospaceship\n").
