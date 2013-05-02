@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-CodeMirror.defineMode("xquery", function() {
+CodeMirror.defineMode("xquery", function(config, parserConfig) {
 
   // The keywords object is set to the result of this self executing
   // function. Each keyword is a property of the keywords object whose
@@ -33,7 +33,7 @@ CodeMirror.defineMode("xquery", function() {
       , C = kw("keyword c")
       , operator = kw("operator")
       , atom = {type: "atom", style: "atom"}
-      , punctuation = {type: "punctuation", style: null}
+      , punctuation = {type: "punctuation", style: ""}
       , qualifier = {type: "axis_specifier", style: "qualifier"};
     
     // kwObj is what is return from this function at the end
@@ -121,12 +121,12 @@ CodeMirror.defineMode("xquery", function() {
     // start code block
     else if(ch == "{") {
       pushStateStack(state,{ type: "codeblock"});
-      return ret("", null);
+      return ret("", "");
     }
     // end code block
     else if(ch == "}") {
       popStateStack(state);
-      return ret("", null);
+      return ret("", "");
     }
     // if we're in an XML block
     else if(isInXmlBlock(state)) {
@@ -163,22 +163,22 @@ CodeMirror.defineMode("xquery", function() {
     // open paren
     else if(ch === "(") {
       pushStateStack(state, { type: "paren"});
-      return ret("", null);
+      return ret("", "");
     }
     // close paren
     else if(ch === ")") {
       popStateStack(state);
-      return ret("", null);
+      return ret("", "");
     }
     // open paren
     else if(ch === "[") {
       pushStateStack(state, { type: "bracket"});
-      return ret("", null);
+      return ret("", "");
     }
     // close paren
     else if(ch === "]") {
       popStateStack(state);
-      return ret("", null);
+      return ret("", "");
     }
     else {
       var known = keywords.propertyIsEnumerable(ch) && keywords[ch];
@@ -342,7 +342,7 @@ CodeMirror.defineMode("xquery", function() {
       return ret("tag", "tag");
     }
     if(ch == "=")
-      return ret("", null);
+      return ret("", "");
     // quoted string
     if (ch == '"' || ch == "'")
       return chain(stream, state, tokenString(ch, tokenAttribute));
@@ -401,6 +401,7 @@ CodeMirror.defineMode("xquery", function() {
   // functions to test the current context of the state
   function isInXmlBlock(state) { return isIn(state, "tag"); }
   function isInXmlAttributeBlock(state) { return isIn(state, "attribute"); }
+  function isInCodeBlock(state) { return isIn(state, "codeblock"); }
   function isInXmlConstructor(state) { return isIn(state, "xmlconstructor"); }
   function isInString(state) { return isIn(state, "string"); }
 
@@ -423,14 +424,14 @@ CodeMirror.defineMode("xquery", function() {
   }
   
   function popStateStack(state) {
-    state.stack.pop();
+    var popped = state.stack.pop();
     var reinstateTokenize = state.stack.length && state.stack[state.stack.length-1].tokenize;
     state.tokenize = reinstateTokenize || tokenBase;
   }
   
   // the interface for the mode API
   return {
-    startState: function() {
+    startState: function(basecolumn) {
       return {
         tokenize: tokenBase,
         cc: [],

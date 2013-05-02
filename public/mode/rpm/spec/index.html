@@ -90,7 +90,8 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
       var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         mode: {name: "spec"},
         lineNumbers: true,
-        indentUnit: 4
+        indentUnit: 4,
+        matchBrackets: true
       });
     </script>
 

@@ -7,7 +7,7 @@ var Buffer = require('buffer').Buffer
 var fs = require('fs')
 
 app = express.createServer()
-app.listen(8082)
+app.listen(8084)
 
 app.configure(function(){
     app.use(express.methodOverride())
@@ -78,7 +78,7 @@ function recompile() {
   var filename = '' + (new Date()).getTime() + Math.random()
   console.log(filename)
 
-  var gcc = spawn('./compile.sh', [filename])
+  var gcc = spawn('./compile.sh', [filename, syntax])
   gcc.stdout.on('data', function(data) {
       chunks.push(data)
       length += data.length

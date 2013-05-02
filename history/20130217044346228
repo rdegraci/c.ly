@@ -1,6 +1,0 @@
-
-
-fib = "adfjs"
-
-main = putStrLn fib
-

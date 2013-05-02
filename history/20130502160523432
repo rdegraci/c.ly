@@ -1,0 +1,9 @@
+.row-fluid
+  .span6.well.offset3
+    %form.form-horizontal
+      %h3 Hello form for things that does things
+      .control-group
+        %label.control-label blah
+        .controls
+          %input{:type=>'text'}
+            .

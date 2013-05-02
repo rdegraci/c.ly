@@ -1,0 +1,38 @@
+.navbar
+  .navbar-inner
+    .brand Asdf Thing
+    %ul.nav
+      %li.active
+        %a asdfasdf
+      %li
+        %a asdf
+      %li
+        %a bloop
+         
+        
+       
+
+.row-fluid
+  .span6.well.offset3
+    %form.form-horizontal
+      %h3 Hello form for things that does things
+      %span.badge.badge-success asdf
+      %span.badge.badge-warning asdf
+      %span.badge.badge-important asdf
+      %span.badge.badge-info asdf
+      %span.badge.badge-inverse asdf
+      .control-group
+        %label.control-label blah
+        .controls
+          %input{:type=>'text'}
+          
+          
+.row-fluid
+  .span6.offset3
+    .hero-unit
+      %h1 heading
+      %p tagline
+      %p
+        %a.btn.btn-primary.btn-large Woop Woop
+        
+            

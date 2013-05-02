@@ -31,37 +31,19 @@ CodeMirror.defineMode("sieve", function(config) {
       state.tokenize = tokenString(ch);
       return state.tokenize(stream, state);
     }
-    
-    if (ch == "(") {
-      state._indent.push("(");
-      // add virtual angel wings so that editor behaves...
-      // ...more sane incase of broken brackets
-      state._indent.push("{");
+
+    if (ch === "{")
+    {
+      state._indent++;
       return null;
     }
 
-    if (ch === "{") {
-      state._indent.push("{");
+    if (ch === "}")
+    {
+      state._indent--;
       return null;
-    }
-    
-    if (ch == ")")  {
-      state._indent.pop();
-      state._indent.pop();    
     }
 
-    if (ch === "}") {
-      state._indent.pop();
-      return null;
-    }
-    
-    if (ch == ",")
-      return null;
-      
-    if (ch == ";")
-      return null;
-      
-    
     if (/[{}\(\),;]/.test(ch))
       return null;
 
@@ -80,7 +62,7 @@ CodeMirror.defineMode("sieve", function(config) {
       return "operator";
     }
 
-    stream.eatWhile(/\w/);
+    stream.eatWhile(/[\w\$_]/);
     var cur = stream.current();
 
     // "text:" *(SP / HTAB) (hash-comment / CRLF)
@@ -97,8 +79,6 @@ CodeMirror.defineMode("sieve", function(config) {
 
     if (atoms.propertyIsEnumerable(cur))
       return "atom";
-      
-    return null;
   }
 
   function tokenMultiLineString(stream, state)
@@ -155,7 +135,7 @@ CodeMirror.defineMode("sieve", function(config) {
     startState: function(base) {
       return {tokenize: tokenBase,
               baseIndent: base || 0,
-              _indent: []};
+              _indent: 0};
     },
 
     token: function(stream, state) {
@@ -165,15 +145,8 @@ CodeMirror.defineMode("sieve", function(config) {
       return (state.tokenize || tokenBase)(stream, state);;
     },
 
-    indent: function(state, _textAfter) {
-      var length = state._indent.length;
-      if (_textAfter && (_textAfter[0] == "}"))
-        length--;
-      
-      if (length <0)
-        length = 0;
-      
-      return length * indentUnit;
+    indent: function(state, textAfter) {
+      return state.baseIndent + state._indent * indentUnit;
     },
 
     electricChars: "}"

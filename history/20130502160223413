@@ -1,0 +1,7 @@
+.row-fluid
+  .span2.well.offset5
+    %form.form-horizontal
+      .control-group
+      
+        .controls
+    

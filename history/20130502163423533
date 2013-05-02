@@ -1,0 +1,70 @@
+.navbar
+  .navbar-inner
+    .brand Asdf Thing
+    %ul.nav
+      %li.active
+        %a asdfasdf
+      %li
+        %a asdf
+      %li
+        %a bloop
+
+.alert
+  %button.close &times;
+  %strong warning!
+  Whoop Whoop Whop Whop Whoop
+  
+
+.alert.alert-error
+  %button.close &times;
+  %strong error!
+  failed to check yo self thusly wrecking yo self
+
+.alert.alert-info
+  %button.close &times;
+  %strong Heads up!
+  Checking yo self may prevent wrecking
+  
+.hero-unit
+  %h1 Yo!
+  .p Blah blah blah
+  %a{:href => 'http://twitter.github.io/bootstrap/components.html'} Check out some of the bootstrap components to try out!
+
+.tabbable
+  %ul.nav.nav-pills
+    %li.active
+      %a{:href => '#one' } Some Tab
+    %li
+      %a{:href => '#two' } Some Tab
+    %li
+      %a{:href => '#three' } Some Tab
+    %li
+      %a{:href => '#four' } Some Tab
+  .tab-content
+    .tab-pane#one  
+      .row-fluid
+        .span6.well.offset3
+          %form.form-horizontal
+            %h3 Hello form for things that does things
+            %span.badge.badge-success asdf
+            %span.badge.badge-warning asdf
+            %span.badge.badge-important asdf
+            %span.badge.badge-info asdf
+            %span.badge.badge-inverse asdf
+      .control-group
+        %label.control-label blah
+        .controls
+          %input{:type=>'text'}
+      .progress.progress-striped.active
+        .bar{:style => 'width:79%'}
+          
+          
+.row-fluid
+  .span6.offset3
+    .hero-unit
+      %h1 heading
+      %p tagline
+      %p
+        %a.btn.btn-primary.btn-large Woop Woop!
+        
+            

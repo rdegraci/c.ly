@@ -1,4 +1,0 @@
-
-fib = "adffffjs"
-
-main = putStrLn fib

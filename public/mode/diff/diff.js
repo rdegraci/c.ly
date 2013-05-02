@@ -1,8 +1,8 @@
 CodeMirror.defineMode("diff", function() {
 
   var TOKEN_NAMES = {
-    '+': 'positive',
-    '-': 'negative',
+    '+': 'tag',
+    '-': 'string',
     '@': 'meta'
   };
 

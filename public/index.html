@@ -8,8 +8,13 @@
 <script src="jquery.ui.touch-punch.min.js"></script>
     <link rel="stylesheet" href="/codemirror.css">
     <script src="/codemirror.js"></script>
-    <script src="/mode/meta.js"></script>
-<script src='/mode/xml/xml.js'></script> <script src='/mode/haxe/haxe.js'></script> <script src='/mode/clojure/clojure.js'></script> <script src='/mode/commonlisp/commonlisp.js'></script> <script src='/mode/ruby/ruby.js'></script> <script src='/mode/javascript/javascript.js'></script> <script src='/mode/rst/rst.js'></script> <script src='/mode/apl/apl.js'></script> <script src='/mode/tiddlywiki/tiddlywiki.js'></script> <script src='/mode/ntriples/ntriples.js'></script> <script src='/mode/haskell/haskell.js'></script> <script src='/mode/erlang/erlang.js'></script> <script src='/mode/smalltalk/smalltalk.js'></script> <script src='/mode/pascal/pascal.js'></script> <script src='/mode/pig/pig.js'></script> <script src='/mode/php/php.js'></script> <script src='/mode/diff/diff.js'></script> <script src='/mode/jinja2/jinja2.js'></script> <script src='/mode/markdown/markdown.js'></script> <script src='/mode/python/python.js'></script> <script src='/mode/properties/properties.js'></script> <script src='/mode/verilog/verilog.js'></script> <script src='/mode/lua/lua.js'></script> <script src='/mode/sql/sql.js'></script> <script src='/mode/http/http.js'></script> <script src='/mode/ecl/ecl.js'></script> <script src='/mode/z80/z80.js'></script> <script src='/mode/less/less.js'></script> <script src='/mode/shell/shell.js'></script> <script src='/mode/vbscript/vbscript.js'></script> <script src='/mode/coffeescript/coffeescript.js'></script> <script src='/mode/perl/perl.js'></script> <script src='/mode/groovy/groovy.js'></script> <script src='/mode/gfm/gfm.js'></script> <script src='/mode/yaml/yaml.js'></script> <script src='/mode/htmlmixed/htmlmixed.js'></script> <script src='/mode/css/css.js'></script> <script src='/mode/r/r.js'></script> <script src='/mode/stex/stex.js'></script> <script src='/mode/velocity/velocity.js'></script> <script src='/mode/asterisk/asterisk.js'></script> <script src='/mode/clike/clike.js'></script> <script src='/mode/sieve/sieve.js'></script> <script src='/mode/plsql/plsql.js'></script> <script src='/mode/d/d.js'></script> <script src='/mode/vb/vb.js'></script> <script src='/mode/scheme/scheme.js'></script> <script src='/mode/sass/sass.js'></script> <script src='/mode/go/go.js'></script> <script src='/mode/tiki/tiki.js'></script> <script src='/mode/smarty/smarty.js'></script> <script src='/mode/rust/rust.js'></script> <script src='/mode/xquery/xquery.js'></script> <script src='/mode/sparql/sparql.js'></script> <script src='/mode/ocaml/ocaml.js'></script> <script src='/mode/mysql/mysql.js'></script> <script src='/mode/htmlembedded/htmlembedded.js'></script> <script src='/mode/rpm/spec/spec.js'></script> <script src='/mode/rpm/changes/changes.js'></script>
+    <script src="http://codemirror.net/mode/xml/xml.js"></script>
+    <script src="http://codemirror.net/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="http://codemirror.net/mode/javascript/javascript.js"></script>
+    <script src="http://codemirror.net/mode/ruby/ruby.js"></script>
+    <script src="http://codemirror.net/mode/haml/haml.js"></script>
+
+<link rel="stylesheet" href="http://codemirror.net/doc/docs.css">
 
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
@@ -41,7 +46,7 @@
             var editor = window.r=CodeMirror.fromTextArea(document.getElementById("c_program"), {
                 lineNumbers: true,
                 matchBrackets: true,
-                mode: "text/x-csrc",
+                mode: "text/x-haml",
                 onChange: function(self, change) {
                     if (!network_update) {
                         sock.emit('modify', self.getValue())
@@ -56,16 +61,11 @@
                 editor.setValue(val)
             })
 
-            sock.on('syntax', function(val) {
-                editor.setOption("mode", val)
-                $('#syntax').val(val)
-            })
-
-            var modes = $.unique($(CodeMirror.modeInfo).map(function(){return this.mode}).sort())
-            $(modes).each(function() {
-                if (this == 'gfm') { return }
-                $('#syntax').append('<option value="'+this+'">'+this+'</option>')
-            })
+            modes["prolog"] = "text/prolog"
+            for (var mode in modes) {
+                if (this == 'gfm') { continue }
+                $('#syntax').append('<option value="'+modes[mode]+'">'+mode+'</option>')
+            }
             $('#syntax').change(function() {
                 editor.setOption("mode", $(this).val())
                 sock.emit('syntax', $(this).val())
@@ -96,6 +96,7 @@
             height: 100%;
             overflow: scroll;
             font-family: monospace, Courier;
+            font-size: 8px;
         }
     
         #etc {
@@ -166,8 +167,8 @@ border: 0.3em solid #2C2C2C;
 border-bottom: none;
 }
 
-        #locked {
-            
+        body {
+            margin: 0;
         }
     </style>
 </head>

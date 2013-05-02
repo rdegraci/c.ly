@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">    
+
+<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script src="http://code.jquery.com/ui/1.8.21/jquery-ui.min.js"></script>
+<script src="jquery.ui.touch-punch.min.js"></script>
+
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+
+            var sock = io.connect()
+            var network_update = false
+            var last_build_status = true
+            
+            sock.on('stdout', function(stdout) {
+                if (stdout.text != "") { // if this is not a failing build
+                    $('#stdout').html(stdout.text)
+                    $('#last_update').text("last updated at: " + (new Date(stdout.timestamp)))
+                    //if(last_build_status == false) {
+                    //    $('#background').animate({ 'background-color': '#eeffee' }, 200)
+                    //}
+                    last_build_status = true
+                } else { // if this IS a failing build
+                    //if (last_build_status == true) {
+                    //    $('#background').animate({ 'background-color': '#ffeeff'});
+                    //}
+                    last_build_status = false
+                }
+            })
+                       
+            sock.on('modify', function(val) { 
+                network_update=true
+            })
+
+            sock.on('lock', function() {
+                $('#lock').addClass('lock').removeClass('unlock')
+            })
+            sock.on('unlock', function() {
+                $('#lock').addClass('unlock').removeClass('lock')
+            })
+
+        })
+    </script>
+    <style type="text/css">    
+        #c_program {
+            font-size: 10px;
+            width: 20%;
+            position: absolute;
+            height: 100%;
+            left: 0;
+        }
+        .imgcontainer {
+            position:absolute;
+            width: 50%;
+            right:0;
+            height: 100%;
+            overflow: scroll;
+            font-family: monospace, Courier;
+            font-size: 10px;
+        }
+    
+        #etc {
+            position: fixed;
+            font-size: 12px;
+            bottom: 10px;
+            right: 20px;
+        }
+
+        #errors {
+            position: fixed;
+            font-size: 12px;
+            bottom: 10px;
+            left: 20px;
+            height: 200px;
+            width: 80%;
+            overflow: auto;
+        }
+
+        #background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        #CodeMirror {
+            opacity: 0.7;
+        }
+
+.lock {
+margin-top: 0.8em;
+border-radius: 0.3em;
+box-shadow: inset 0.9em 0.8em 0 0 #2C2C2C,inset -0.9em 0.8em 0 0 #2C2C2C,inset 0em -0.4em 0 0 #2C2C2C;
+font-size: 8px;
+width: 2em;
+height: 1.8em;
+position: relative;
+}
+.lock::before {
+left: 0.32em;
+border-radius: 1em 1em 0 0;
+top: -0.8em;
+position: absolute;
+width: 0.8em;
+content: "";
+height: 1.8em;
+border: 0.3em solid #2C2C2C;
+border-bottom: none;
+}
+.unlock {
+margin-top: 0.8em;
+border-radius: 0.3em;
+box-shadow: inset 0.9em 0.8em 0 0 #2C2C2C,inset -0.9em 0.8em 0 0 #2C2C2C,inset 0em -0.4em 0 0 #2C2C2C;
+font-size: 8px;
+width: 2em;
+height: 1.8em;
+position: relative;
+}
+.unlock::before {
+left: 1.4em;
+border-radius: 1em 1em 0 0;
+top: -0.8em;
+position: absolute;
+width: 0.8em;
+content: "";
+height: 0.8em;
+border: 0.3em solid #2C2C2C;
+border-bottom: none;
+}
+
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+  <div id='background'></div>
+  
+  <div id='stdout'></div>
+  
+</body>
+</html>
