@@ -25,14 +25,10 @@
                     $('#stdout').text(stdout.text)
                     $('#last_update').text("last updated at: " + (new Date(stdout.timestamp)))
                     $('#errors').text('')
-                    if(last_build_status == false) {
-                        $('#background').animate({ 'background-color': '#eeffee' }, 200)
-                    }
+                    $('#background').animate({ 'background-color': '#eeffee' }, 200)
                     last_build_status = true
                 } else { // if this IS a failing build
-                    if (last_build_status == true) {
-                        $('#background').animate({ 'background-color': '#ffeeff'});
-                    }
+                    $('#background').animate({ 'background-color': '#ffeeff'});
                     $('#errors').text(stdout.error)
                     last_build_status = false
                 }
@@ -62,8 +58,8 @@
             })
 
             var modes = $.unique($(CodeMirror.modeInfo).map(function(){return this.mode}).sort())
-            $(modes).each(function() {
-                if (this == 'gfm') { return }
+            var used_modes = [ 'javascript', 'ruby', 'less', 'clike', 'python' ]
+            $(used_modes).each(function() {
                 $('#syntax').append('<option value="'+this+'">'+this+'</option>')
             })
             $('#syntax').change(function() {

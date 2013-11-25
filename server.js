@@ -40,6 +40,7 @@ io.sockets.on('connection', function(client) {
   client.on('syntax', function(message) {
     syntax = message
     client.broadcast.emit('syntax', syntax)
+    recompile()
   })
 
   client.on('modify', function(message) {
@@ -76,9 +77,9 @@ function recompile() {
       err_length = 0
 
   var filename = '' + (new Date()).getTime() + Math.random()
-  console.log(filename)
 
-  var gcc = spawn('./compile.sh', [filename])
+  console.log('./compile.sh ', filename, syntax)
+  var gcc = spawn('./compile.sh', [filename, syntax])
   gcc.stdout.on('data', function(data) {
       chunks.push(data)
       length += data.length
