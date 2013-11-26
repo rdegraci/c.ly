@@ -19,16 +19,19 @@
             var sock = io.connect()
             var network_update = false
             var last_build_status = true
+            var success_color = "#eeffee"
+            var error_color = "#ffeeff"
             
             sock.on('stdout', function(stdout) {
                 if (stdout.text != "") { // if this is not a failing build
                     $('#stdout').text(stdout.text)
                     $('#last_update').text("last updated at: " + (new Date(stdout.timestamp)))
                     $('#errors').text('')
-                    $('#background').animate({ 'background-color': '#eeffee' }, 200)
+
+                        $('#background').stop().animate({ 'background-color': success_color }, 500)
                     last_build_status = true
                 } else { // if this IS a failing build
-                    $('#background').animate({ 'background-color': '#ffeeff'});
+                    $('#background').stop().animate({ 'background-color': error_color }, 500);
                     $('#errors').text(stdout.error)
                     last_build_status = false
                 }
