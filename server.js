@@ -17,9 +17,10 @@ app.configure(function(){
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
 })
 
-var io = socketio.listen(app)
+var io = socketio.listen(app, { 'log level': 1 })
 
 var c_program = '#include <stdio.h>\n\nint main(void) {\n  printf("asdf\\n")\n  return 0;\n}\n'
+c_program = fs.readFileSync('history/' + fs.readdirSync('history/').slice(-1)[0]).toString()
 var syntax = 'clike'
 var stdout = ''
 var stderr = ''
@@ -80,6 +81,13 @@ function recompile() {
 
   console.log('./compile.sh ', filename, syntax)
   var gcc = spawn('./compile.sh', [filename, syntax])
+  var timeout_handler = setTimeout(function() {
+    // kill gcc
+    console.log('Timeout!! had to kill the process')
+    gcc.kill("SIGKILL")
+    locked=false
+    io.sockets.emit('stdout', { timestamp: (new Date()).getTime(), text: "", error: "timeout" })
+  }, 1000)
   gcc.stdout.on('data', function(data) {
       chunks.push(data)
       length += data.length
@@ -91,6 +99,7 @@ function recompile() {
   gcc.stdin.write(c_program)
   gcc.stdin.end()
   gcc.on('exit', function() {
+      clearTimeout(timeout_handler);
       var buf = new Buffer(length),
           err_buf = new Buffer(err_length),
           i = 0
@@ -130,4 +139,4 @@ setInterval(function() {
   var d = new Date();
   var fname = "history/" + d.toJSON().replace(/[^0-9]/g,'')
   fs.writeFile(fname, c_program)
-}, (1000*30)) // once a minute
+}, (1000*30)) //every 30 seconds 

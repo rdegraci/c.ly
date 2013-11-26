@@ -3,8 +3,6 @@
 timestamp="$1"
 syntax="$2"
 
-echo "$syntax $timestamp" > u
-
 case $syntax in
 'clike')
   gcc -x c - -o "$1" 2>&1 && echo -e "\n\n\n" && ./"$1" 2>&1
@@ -28,5 +26,5 @@ case $syntax in
 'less')
   lessc --no-color -
   ;;
-esac
+esac 
 
