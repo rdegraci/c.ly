@@ -17,7 +17,12 @@
            "name": "Daniel Lewis",
            "email": "daniel@levelsetlabs.com",
            "web": "http://www.familab.org/" 
-       } 
+       }, 
+       {
+           "name": "David Rivera", 
+           "email": "David.R.Rivera193@gmail.com", 
+           "web": "http://www.protodx.com/"
+       }
    ],
    "bugs": {
        "email": "daniel@levelsetlabs.com",

@@ -5,9 +5,10 @@ var socketio = require("socket.io")
 var spawn = require('child_process').spawn;
 var Buffer = require('buffer').Buffer
 var fs = require('fs')
+var Compiler = require('./lib/compiler'); 
 
 app = express.createServer()
-app.listen(8082)
+app.listen(3000)
 
 app.configure(function(){
     app.use(express.methodOverride())
@@ -18,6 +19,7 @@ app.configure(function(){
 })
 
 var io = socketio.listen(app, { 'log level': 1 })
+
 
 var c_program = '#include <stdio.h>\n\nint main(void) {\n  printf("asdf\\n")\n  return 0;\n}\n'
 c_program = fs.readFileSync('history/' + fs.readdirSync('history/').slice(-1)[0]).toString()
@@ -32,6 +34,9 @@ var needs_recompile = false
 var locked = false
 var lockTimeout
 
+
+var compiler = new Compiler(c_program, syntax); 
+
 io.sockets.on('connection', function(client) {
   client.emit('modify', c_program)
   client.emit('syntax', syntax)
@@ -41,7 +46,8 @@ io.sockets.on('connection', function(client) {
   client.on('syntax', function(message) {
     syntax = message
     client.broadcast.emit('syntax', syntax)
-    recompile()
+    compiler.syntax = syntax; 
+    compiler.recompile(c_program); 
   })
 
   client.on('modify', function(message) {
@@ -60,74 +66,15 @@ io.sockets.on('connection', function(client) {
     console.log("modify:  ", message)
     c_program = message
 
-    recompile()
+    compiler.recompile(c_program)
   })
 })
 
 
-function recompile() {
-  needs_recompile = true
-
-  if (recompiling) return;
-
-  recompiling = true
-
-  var chunks = [],
-      err_chunks = [],
-      length = 0,
-      err_length = 0
-
-  var filename = '' + (new Date()).getTime() + Math.random()
-
-  console.log('./compile.sh ', filename, syntax)
-  var gcc = spawn('./compile.sh', [filename, syntax])
-  var timeout_handler = setTimeout(function() {
-    // kill gcc
-    console.log('Timeout!! had to kill the process')
-    gcc.kill("SIGKILL")
-    locked=false
-    io.sockets.emit('stdout', { timestamp: (new Date()).getTime(), text: "", error: "timeout" })
-  }, 1000)
-  gcc.stdout.on('data', function(data) {
-      chunks.push(data)
-      length += data.length
-  })
-  gcc.stderr.on('data', function(data) {
-      err_chunks.push(data);
-      err_length += data.length;
-  })
-  gcc.stdin.write(c_program)
-  gcc.stdin.end()
-  gcc.on('exit', function() {
-      clearTimeout(timeout_handler);
-      var buf = new Buffer(length),
-          err_buf = new Buffer(err_length),
-          i = 0
-      
-      chunks.forEach(function(b) {
-          b.copy(buf, i, 0, b.length)
-          i += b.length
-      })
-
-      i=0
-      err_chunks.forEach(function(b) {
-          b.copy(err_buf, i, 0, b.length)
-          i += b.length
-      })
-
-      stdout = buf.toString()
-      stderr = err_buf.toString()
-      
-      io.sockets.emit('stdout', { timestamp: (new Date()).getTime(), text: stdout, error: stderr })
-      locked=false
-
-      recompiling = false
-      if (needs_recompile) {
-          recompile()
-          needs_recompile = false
-      }
-  })
-}
+compiler.on('recompiled', function(a){
+    io.sockets.emit('stdout', a); 
+    locked=false; 
+})
 
 
 
