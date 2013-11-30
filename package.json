@@ -43,7 +43,8 @@
     },
    "dependencies": {
        "socket.io": "0.8.5",
-       "express": "2.4.7"
+       "express": "2.4.7", 
+       "jsondiffpatch": "0.0.8"
    },
    "os": ["linux"],
    "cpu": ["x86", "x86_64"],
