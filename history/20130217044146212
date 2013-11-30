@@ -1,4 +1,0 @@
-
-fib = "adfs"
-
-putStrLn fib

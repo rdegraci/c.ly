@@ -1,6 +1,0 @@
-#include <stdio.h>
-
-int main(void) {
-  printf("m,zxfhkajksfdadfsghkladfs adfsh adfshkl adfsjasdf\n");
-  return 0;
-}
