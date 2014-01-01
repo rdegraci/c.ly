@@ -6,6 +6,7 @@ var spawn = require('child_process').spawn;
 var Buffer = require('buffer').Buffer
 var fs = require('fs')
 var Compiler = require('./lib/compiler'); 
+var jsondiffpatch = require('jsondiffpatch'); 
 
 app = express.createServer()
 app.listen(3000)
@@ -31,17 +32,12 @@ var last_c_program_saved = c_program
 var recompiling = false
 var needs_recompile = false
 
-var locked = false
-var lockTimeout
-
-
 var compiler = new Compiler(c_program, syntax); 
 
 io.sockets.on('connection', function(client) {
   client.emit('modify', c_program)
   client.emit('syntax', syntax)
   client.emit('stdout', { timestamp: (new Date()).getTime(), text: stdout, error: stderr })
-  client.emit( (locked ? 'lock' : 'unlock') )
 
   client.on('syntax', function(message) {
     syntax = message
@@ -51,20 +47,13 @@ io.sockets.on('connection', function(client) {
   })
 
   client.on('modify', function(message) {
-    if (!locked) {
-        client.broadcast.emit('lock')
-    }
+    var current = {"program":c_program}; 
+    var mod = {"program":message}; 
 
-    locked = true
-    clearTimeout(lockTimeout)
-    lockTimeout = setTimeout(function() {
-        io.sockets.emit('unlock')
-    }, 3000)
+    var delta = jsondiffpatch.diff(current, mod);
+    c_program = jsondiffpatch.patch(current, delta).program; 
 
-    client.broadcast.emit('modify', message)
-
-    console.log("modify:  ", message)
-    c_program = message
+    client.broadcast.emit('modify', c_program)
 
     compiler.recompile(c_program)
   })
@@ -73,7 +62,6 @@ io.sockets.on('connection', function(client) {
 
 compiler.on('recompiled', function(a){
     io.sockets.emit('stdout', a); 
-    locked=false; 
 })
 
 

@@ -1,8 +1,0 @@
-
--- blah blah
-
-succ n = n = n + 1
-
-putStrLn succ 
-
-

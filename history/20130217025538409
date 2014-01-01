@@ -1,5 +1,0 @@
--module(asdf).
--export([start/0]).
-
-start() ->
-  io:fwrite("Hello Worfdld\n"). 

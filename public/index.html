@@ -49,10 +49,13 @@
                     }
                 }
             })
+            console.log(editor.getCursor()); 
 
             sock.on('modify', function(val) { 
+              var currentPos = editor.getCursor(); 
                 network_update=true
                 editor.setValue(val)
+                editor.setCursor(currentPos); 
             })
 
             sock.on('syntax', function(val) {
