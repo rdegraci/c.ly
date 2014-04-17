@@ -9,7 +9,7 @@ var Compiler = require('./lib/compiler');
 var jsondiffpatch = require('jsondiffpatch'); 
 
 app = express.createServer()
-app.listen(3000)
+app.listen(process.env.PORT || 3000)
 
 app.configure(function(){
     app.use(express.methodOverride())
@@ -19,7 +19,8 @@ app.configure(function(){
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
 })
 
-var io = socketio.listen(app, { 'log level': 1 })
+//var io = socketio.listen(app, { 'log level': 1 })
+var io = socketio.listen(app)
 
 
 var c_program = '#include <stdio.h>\n\nint main(void) {\n  printf("asdf\\n")\n  return 0;\n}\n'
