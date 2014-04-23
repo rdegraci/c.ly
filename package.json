@@ -48,7 +48,9 @@
    },
    "os": ["linux"],
    "cpu": ["x86", "x86_64"],
-   "engines": ["v8", "node"],
+   "engines": {
+     "node": "0.10.x"
+   },
    "scripts": {
    },
    "directories": {
