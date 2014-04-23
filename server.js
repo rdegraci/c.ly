@@ -29,6 +29,7 @@ var syntax = 'clike'
 var stdout = ''
 var stderr = ''
 var last_c_program_saved = c_program
+var unlock_timeout = null
 
 var recompiling = false
 var needs_recompile = false
@@ -48,6 +49,13 @@ io.sockets.on('connection', function(client) {
   })
 
   client.on('modify', function(message) {
+    if (unlock_timeout != null ) clearInterval(unlock_timeout)
+    unlock_timeout = setTimeout(function() {
+      io.sockets.emit('unlock')
+      unlock_timeout = null
+    }, 5000)
+    client.broadcast.emit('lock')
+
     var current = {"program":c_program}; 
     var mod = {"program":message}; 
 
@@ -76,3 +84,4 @@ setInterval(function() {
   var fname = "history/" + d.toJSON().replace(/[^0-9]/g,'')
   fs.writeFile(fname, c_program)
 }, (1000*30)) //every 30 seconds 
+
