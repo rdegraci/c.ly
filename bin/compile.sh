@@ -26,5 +26,10 @@ case $syntax in
 'less')
   lessc --no-color -
   ;;
+'rust')
+  rustc -
+  ./rust_out
+  rm rust_out
+  ;;
 esac 
 
