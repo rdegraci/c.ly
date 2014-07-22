@@ -17,14 +17,29 @@ case $syntax in
 'ruby')
   ruby
   ;;
-'haskell') # doesnt work
-  hs
+'haskell')
+  cat /dev/stdin > /tmp/b.hs
+  ghc -o "$1" /tmp/b.hs 1>&2 && ./"$1" 1>&1 
+  
   ;;
-'r') # doesnt work
-  r
+'scala') 
+	cat /dev/stdin > /tmp/a
+	scala -nc /tmp/a  1>&1 
   ;;
-'less')
-  lessc --no-color -
+'R')
+	R --vanilla --slave < /dev/stdin 1>&1 2>&2 
+  ;;
+'c#')
+	cat /dev/stdin > /tmp/a
+	gmcs /tmp/a
+	mono /tmp/a.exe 
+  ;;
+'idris')
+	cat /dev/stdin > /tmp/a.idr
+	idris -o "$1" /tmp/a.idr && ./"$1" 1>&1  
+  ;;
+'cless')
+  lessc --no-color 
   ;;
 esac 
 
