@@ -64,7 +64,6 @@
             })
 
             var modes = $.unique($(CodeMirror.modeInfo).map(function(){return this.mode}).sort())
-            var used_modes = [ 'javascript', 'ruby', 'less', 'clike', 'python' ]
             var used_modes = [ 	'clike', 
 							   	'python', 
 								'javascript',
@@ -74,7 +73,8 @@
 								"R", 
 								"c#", 
 								"idris", 
-								'cless' ]
+								'cless', 
+								'rust' ]
             $(used_modes).each(function() {
                 $('#syntax').append('<option value="'+this+'">'+this+'</option>')
             })

@@ -49,7 +49,7 @@ io.sockets.on('connection', function(client) {
   })
 
   client.on('modify', function(message) {
-    if (unlock_timeout != null ) clearInterval(unlock_timeout)
+    if (unlock_timeout != null ) clearTimeout(unlock_timeout)
     unlock_timeout = setTimeout(function() {
       io.sockets.emit('unlock')
       unlock_timeout = null
